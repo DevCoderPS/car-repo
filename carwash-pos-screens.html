@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ကားဆေးဆိုင် POS – နမူနာ Screen များ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef2f7; --card:#fff; --ink:#1b2733; --muted:#64748b; --line:#e2e8f0;
+    --brand:#0b6fb8; --brand-d:#085892; --soft:#e6f2fb;
+    --wait:#f59e0b; --wash:#0b6fb8; --done:#16a34a; --out:#94a3b8; --danger:#dc2626;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans Myanmar","Myanmar Text","Padauk",system-ui,sans-serif;line-height:1.75;font-size:15px}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  h1{font-size:1.4rem;margin:8px 0 2px}
+  .sub{color:var(--muted);margin:0 0 14px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+  .tab{border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 14px;cursor:pointer;font:inherit;color:var(--ink)}
+  .tab.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .screen{display:none} .screen.on{display:block}
+  .cap{margin:0 0 10px;color:var(--muted);font-size:.93rem}
+  .cap b{color:var(--ink)}
+
+  /* device frames */
+  .tablet{background:#0f172a;border-radius:22px;padding:12px;box-shadow:0 10px 30px rgba(15,23,42,.18)}
+  .tablet .in{background:var(--bg);border-radius:12px;overflow:hidden;min-height:480px}
+  .phone{width:340px;max-width:100%;margin:0 auto;background:#0f172a;border-radius:34px;padding:12px;box-shadow:0 10px 30px rgba(15,23,42,.18)}
+  .phone .in{background:var(--bg);border-radius:24px;overflow:hidden;min-height:620px}
+
+  /* app chrome */
+  .top{background:var(--brand);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .top b{font-size:1.02rem}
+  .top small{opacity:.9}
+  .body{padding:14px}
+  .nav{display:flex;border-top:1px solid var(--line);background:#fff}
+  .nav div{flex:1;text-align:center;padding:7px 2px;font-size:.78rem;color:var(--muted)}
+  .nav div.on{color:var(--brand);font-weight:700}
+  .nav span{display:block;font-size:1.15rem}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .col{flex:1;min-width:220px}
+  .btn{display:inline-block;border:0;border-radius:10px;padding:8px 14px;font:inherit;font-weight:500;background:var(--brand);color:#fff;cursor:pointer}
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+  .btn.ok{background:var(--done)} .btn.big{width:100%;padding:12px;font-size:1.05rem}
+  .pill{display:inline-block;font-size:.75rem;padding:0 9px;border-radius:99px;color:#fff}
+  .muted{color:var(--muted)} .r{text-align:right} .b{font-weight:700}
+  hr{border:0;border-top:1px dashed var(--line);margin:10px 0}
+
+  /* queue */
+  .kan{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:760px){.kan{grid-template-columns:1fr 1fr}}
+  .kcol h4{margin:0 0 8px;font-size:.9rem;display:flex;justify-content:space-between}
+  .car{background:#fff;border:1px solid var(--line);border-left:5px solid var(--out);border-radius:10px;padding:8px 10px;margin-bottom:8px}
+  .car .no{font-weight:700;font-size:1rem}
+  .car small{color:var(--muted)}
+  .car.w{border-left-color:var(--wait)} .car.s{border-left-color:var(--wash)} .car.d{border-left-color:var(--done)}
+
+  /* new order */
+  .seg{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+  .seg span{border:1px solid var(--line);background:#fff;border-radius:10px;padding:3px 12px;cursor:pointer}
+  .seg span.on{background:var(--soft);border-color:var(--brand);color:var(--brand-d);font-weight:700}
+  .svc{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+  .svc button{font:inherit;text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 10px;cursor:pointer}
+  .svc button.on{border-color:var(--brand);background:var(--soft)}
+  .svc button b{display:block}
+  .svc button span{color:var(--muted);font-size:.85rem}
+  .line{display:flex;justify-content:space-between;padding:3px 0}
+  .total{font-size:1.5rem;font-weight:700;color:var(--brand-d)}
+
+  /* payment */
+  .pay{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pay div{border:2px solid var(--line);border-radius:12px;padding:10px;text-align:center;background:#fff}
+  .pay div.on{border-color:var(--brand);background:var(--soft);font-weight:700}
+  .receipt{background:#fff;border:1px dashed #94a3b8;padding:14px;font-family:ui-monospace,Consolas,monospace;font-size:.82rem;line-height:1.7;max-width:300px;margin:0 auto}
+  .receipt .c{text-align:center}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-weight:500;font-size:.82rem}
+  td.n,th.n{text-align:right;white-space:nowrap}
+
+  /* chart */
+  .bars{display:flex;align-items:flex-end;gap:8px;height:150px;padding:8px 4px;border-bottom:1px solid var(--line)}
+  .bars div{flex:1;background:linear-gradient(var(--brand),#38a3e0);border-radius:6px 6px 0 0;position:relative;min-height:6px}
+  .bars div i{position:absolute;top:-18px;left:0;right:0;text-align:center;font-style:normal;font-size:.7rem;color:var(--muted)}
+  .lbl{display:flex;gap:8px;font-size:.78rem;color:var(--muted)} .lbl span{flex:1;text-align:center}
+  .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:12px}
+  .kpi .card b{display:block;font-size:1.25rem;color:var(--brand-d)}
+  .meter{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+  .meter i{display:block;height:100%;background:var(--done)} .meter.low i{background:var(--danger)}
+  .stamps{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .stamps i{width:30px;height:30px;border-radius:50%;border:2px solid var(--brand);display:grid;place-items:center;font-style:normal;font-size:.8rem}
+  .stamps i.f{background:var(--brand);color:#fff} .stamps i.g{border-color:var(--done);color:var(--done);font-weight:700}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;padding:20px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ကားဆေးဆိုင် POS – နမူနာ Screen များ</h1>
+  <p class="sub">အပေါ်က ခလုတ်တွေကို နှိပ်ပြီး Screen တစ်ခုချင်း ကြည့်ပါ။ (နမူနာမျှသာ၊ ဒေတာများ စိတ်ကူးယဉ်ဖြစ်သည်)</p>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-s="s1">၁ ကားတန်းစီ</button>
+    <button class="tab" data-s="s2">၂ အော်ဒါအသစ်</button>
+    <button class="tab" data-s="s3">၃ ငွေပေးချေ + ဘောင်ချာ</button>
+    <button class="tab" data-s="s4">၄ ဖောက်သည်</button>
+    <button class="tab" data-s="s5">၅ ဝန်ထမ်း ကော်မရှင်</button>
+    <button class="tab" data-s="s6">၆ ရောင်းအား Report</button>
+    <button class="tab" data-s="s7">၇ ပစ္စည်းစာရင်း</button>
+    <button class="tab" data-s="s8">၈ Booking (ဖောက်သည်ဖုန်း)</button>
+  </div>
+
+  <!-- 1 QUEUE -->
+  <div class="screen on" id="s1">
+    <p class="cap"><b>ကားတန်းစီ</b> – ဆိုင်ရှေ့က Tablet မှာ ကားတွေ ဘယ်အခြေအနေရောက်နေလဲ တစ်ချက်ကြည့်ရုံနဲ့ သိရပါတယ်။</p>
+    <div class="tablet"><div class="in">
+      <div class="top"><b>🚗 ကားတန်းစီ</b><small>ဒီနေ့ ကား ၁၄ စီး · ၁၃:၄၅</small></div>
+      <div class="body">
+        <div class="kan">
+          <div class="kcol"><h4>စောင့်နေ <span class="pill" style="background:var(--wait)">၃</span></h4>
+            <div class="car w"><div class="no">YGN 5A-1234</div><small>SUV · Full wash</small><br><small>စောင့်ချိန် ၁၀ မိနစ်</small></div>
+            <div class="car w"><div class="no">YGN 2K-8891</div><small>ကား · ပြင်ပဆေး</small></div>
+            <div class="car w"><div class="no">MDY 7B-4410</div><small>ပစ်ကပ် · Full + Wax</small></div>
+          </div>
+          <div class="kcol"><h4>ဆေးနေ <span class="pill" style="background:var(--wash)">၂</span></h4>
+            <div class="car s"><div class="no">YGN 3C-6502</div><small>ကား · Full wash</small><br><small>👷 ကိုအောင် · ကျန် ၈ မိနစ်</small></div>
+            <div class="car s"><div class="no">YGN 1F-2278</div><small>SUV · အတွင်းသန့်ရှင်း</small><br><small>👷 ကိုမောင် · ကျန် ၂၀ မိနစ်</small></div>
+          </div>
+          <div class="kcol"><h4>ပြီးပြီ <span class="pill" style="background:var(--done)">၂</span></h4>
+            <div class="car d"><div class="no">YGN 8D-3340</div><small>ကား · ပြင်ပဆေး</small><br><button class="btn ok" style="padding:2px 10px;margin-top:4px">ငွေရှင်း →</button></div>
+            <div class="car d"><div class="no">YGN 6E-9087</div><small>SUV · Full wash</small><br><button class="btn ok" style="padding:2px 10px;margin-top:4px">ငွေရှင်း →</button></div>
+          </div>
+          <div class="kcol"><h4>ပေးအပ်ပြီး <span class="pill" style="background:var(--out)">၇</span></h4>
+            <div class="car"><div class="no">YGN 4G-1156</div><small>၁၅,၀၀၀ ကျပ် · KBZPay</small></div>
+            <div class="car"><div class="no">YGN 9H-7723</div><small>၈,၀၀၀ ကျပ် · ငွေသား</small></div>
+          </div>
+        </div>
+        <div style="margin-top:12px"><button class="btn">＋ ကားအသစ်လက်ခံ</button></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 2 NEW ORDER (interactive) -->
+  <div class="screen" id="s2">
+    <p class="cap"><b>အော်ဒါအသစ်</b> – ကားအမျိုးအစားရွေး၊ ဝန်ဆောင်မှုကို နှိပ်လိုက်ရုံနဲ့ စျေးနဲ့ ပေါင်းလဒ် အလိုအလျောက်တက်လာပါမယ်။ (စမ်းနှိပ်ကြည့်ပါ)</p>
+    <div class="tablet"><div class="in">
+      <div class="top"><b>＋ အော်ဒါအသစ်</b><small>ကားနံပါတ်ဖြင့် ဖွင့်ရန်</small></div>
+      <div class="body row">
+        <div class="col" style="flex:2;min-width:300px">
+          <div class="card" style="margin-bottom:10px">
+            <div class="muted">ကားနံပါတ်</div>
+            <div class="b" style="font-size:1.4rem;letter-spacing:1px">YGN 5A-1234 <span class="pill" style="background:var(--done);letter-spacing:0">⭐ Member</span></div>
+            <div class="muted">ဦးကျော်ကျော် · ၀၉ ၇၇၇ ၁၂၃ ၄၅၆</div>
+          </div>
+          <div class="muted">ကားအမျိုးအစား</div>
+          <div class="seg" id="vtype">
+            <span data-k="0">🚗 ကား</span><span data-k="1" class="on">🚙 SUV</span><span data-k="2">🛻 ပစ်ကပ်</span><span data-k="3">🛵 ဆိုင်ကယ်</span>
+          </div>
+          <div class="muted">ဝန်ဆောင်မှု (နှိပ်ပြီးရွေးပါ)</div>
+          <div class="svc" id="svc"></div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <div class="b">အော်ဒါစာရင်း</div>
+            <div id="cart" class="muted" style="min-height:70px">ဝန်ဆောင်မှု မရွေးရသေးပါ</div>
+            <hr>
+            <div class="line"><span>လျှော့စျေး (Member ၁၀%)</span><span id="disc">၀</span></div>
+            <div class="line b"><span>စုစုပေါင်း</span><span class="total" id="tot">၀ ကျပ်</span></div>
+            <div style="margin-top:10px"><button class="btn big">ဆက်လက်ငွေရှင်းမည် →</button></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 3 PAYMENT + RECEIPT -->
+  <div class="screen" id="s3">
+    <p class="cap"><b>ငွေပေးချေမှု + ဘောင်ချာ</b> – ငွေပေးနည်းရွေး၊ ပြီးရင် ဘောင်ချာ ပရင့်ထုတ်ရန် (သို့) ဖုန်းထဲ ပို့ပေးရန်။</p>
+    <div class="tablet"><div class="in">
+      <div class="top"><b>💳 ငွေရှင်းမည်</b><small>YGN 5A-1234</small></div>
+      <div class="body row">
+        <div class="col">
+          <div class="card">
+            <div class="muted">ပေးရမည့်ငွေ</div>
+            <div class="total" style="font-size:2rem">၁၈,၀၀၀ ကျပ်</div>
+            <hr>
+            <div class="muted" style="margin-bottom:6px">ငွေပေးနည်း</div>
+            <div class="pay">
+              <div>💵 ငွေသား</div><div class="on">📱 KBZPay</div>
+              <div>📱 WavePay</div><div>📱 AYA Pay</div>
+              <div>💳 Card</div><div>📒 အကြွေးစာရင်း</div>
+            </div>
+            <hr>
+            <div class="line"><span>ငွေလွှဲရန် QR ပြမည်</span><span class="muted">▣▣▣</span></div>
+            <button class="btn ok big" style="margin-top:8px">✓ ငွေလက်ခံပြီး</button>
+          </div>
+        </div>
+        <div class="col">
+          <div class="receipt">
+            <div class="c b">★ သန့်ရှင်းကားဆေးဆိုင် ★</div>
+            <div class="c">ရန်ကုန်၊ (လိပ်စာထည့်ရန်)</div>
+            <div class="c">------------------------</div>
+            <div>ရက်စွဲ: ၂၃-၁၀-၂၀၂၆ ၁၄:၂၀</div>
+            <div>ကား: YGN 5A-1234 (SUV)</div>
+            <div>ဘောင်ချာ: #000284</div>
+            <div class="c">------------------------</div>
+            <div>Full wash &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;၁၂,၀၀၀</div>
+            <div>အနံ့ပျောက်ဆေး &nbsp;&nbsp;&nbsp;၅,၀၀၀</div>
+            <div>တာယာဆေး &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;၃,၀၀၀</div>
+            <div>Member လျှော့စျေး &nbsp;-၂,၀၀၀</div>
+            <div class="c">------------------------</div>
+            <div class="b">စုစုပေါင်း &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;၁၈,၀၀၀ ကျပ်</div>
+            <div>ပေးချေ: KBZPay</div>
+            <div class="c">------------------------</div>
+            <div class="c">ကျေးဇူးတင်ပါသည် 🙏</div>
+          </div>
+          <div style="text-align:center;margin-top:10px"><button class="btn ghost">🖨 ပရင့်</button> <button class="btn ghost">📩 Viber ပို့မည်</button></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 4 CUSTOMER -->
+  <div class="screen" id="s4">
+    <p class="cap"><b>ဖောက်သည်</b> – မှတ်တမ်း၊ ကားစာရင်း၊ Membership၊ အမှတ်ပေးစနစ် အားလုံး တစ်နေရာတည်းမှာ။</p>
+    <div class="phone"><div class="in">
+      <div class="top"><b>👤 ဖောက်သည်</b><small>ပြန်ထွက်</small></div>
+      <div class="body">
+        <div class="card">
+          <div class="b" style="font-size:1.1rem">ဦးကျော်ကျော် <span class="pill" style="background:var(--done)">⭐ Gold Member</span></div>
+          <div class="muted">၀၉ ၇၇၇ ၁၂၃ ၄၅၆</div>
+          <hr>
+          <div class="muted">ကားစာရင်း</div>
+          <div>🚙 YGN 5A-1234 (SUV) · 🚗 YGN 2K-8891 (ကား)</div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="b">လစဉ်ပက်ကေ့ချ် – ၄ ကြိမ်ဆေး</div>
+          <div class="meter" style="margin:6px 0"><i style="width:50%"></i></div>
+          <div class="muted">သုံးပြီး ၂ ကြိမ် · ကျန် ၂ ကြိမ် · ၁၅-၁၁ ထိ</div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="b">အမှတ်ကတ် (၁၀ ကြိမ်ဆေးရင် ၁ ကြိမ်အလကား)</div>
+          <div class="stamps"><i class="f">✓</i><i class="f">✓</i><i class="f">✓</i><i class="f">✓</i><i class="f">✓</i><i class="f">✓</i><i class="f">✓</i><i>8</i><i>9</i><i class="g">FREE</i></div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="b" style="margin-bottom:4px">မကြာသေးမီ မှတ်တမ်း</div>
+          <table><tr><td>၂၀-၁၀</td><td>Full wash</td><td class="n">၁၂,၀၀၀</td></tr>
+          <tr><td>၀၆-၁၀</td><td>Full + Wax</td><td class="n">၂၅,၀၀၀</td></tr>
+          <tr><td>၂၂-၀၉</td><td>ပြင်ပဆေး</td><td class="n">၈,၀၀၀</td></tr></table>
+        </div>
+      </div>
+      <div class="nav"><div><span>🚗</span>တန်းစီ</div><div><span>＋</span>အော်ဒါ</div><div class="on"><span>👥</span>ဖောက်သည်</div><div><span>📊</span>Report</div></div>
+    </div></div>
+  </div>
+
+  <!-- 5 STAFF -->
+  <div class="screen" id="s5">
+    <p class="cap"><b>ဝန်ထမ်းနှင့် ကော်မရှင်</b> – ကားတစ်စီးဆေးတိုင်း ကော်မရှင် အလိုအလျောက်တွက်ပေးပါတယ်။ လစာတွက်ရတာ လွယ်သွားပါမယ်။</p>
+    <div class="tablet"><div class="in">
+      <div class="top"><b>👷 ဝန်ထမ်း</b><small>အောက်တိုဘာ ၂၀၂၆</small></div>
+      <div class="body">
+        <div class="card">
+          <table>
+            <tr><th>ဝန်ထမ်း</th><th class="n">တက်ရက်</th><th class="n">ဆေးသည့်ကား</th><th class="n">ကော်မရှင်</th><th class="n">အခြေခံလစာ</th><th class="n">စုစုပေါင်း</th></tr>
+            <tr><td>ကိုအောင်</td><td class="n">၂၃</td><td class="n">၂၁၀</td><td class="n">၁၆၈,၀၀၀</td><td class="n">၂၅၀,၀၀၀</td><td class="n b">၄၁၈,၀၀၀</td></tr>
+            <tr><td>ကိုမောင်</td><td class="n">၂၂</td><td class="n">၁၈၅</td><td class="n">၁၄၈,၀၀၀</td><td class="n">၂၅၀,၀၀၀</td><td class="n b">၃၉၈,၀၀၀</td></tr>
+            <tr><td>ကိုဇော်</td><td class="n">၂၄</td><td class="n">၁၇၂</td><td class="n">၁၃၇,၆၀၀</td><td class="n">၂၅၀,၀၀၀</td><td class="n b">၃၈၇,၆၀၀</td></tr>
+            <tr><td>မမြတ် (ငွေကိုင်)</td><td class="n">၂၅</td><td class="n">–</td><td class="n">–</td><td class="n">၃၅၀,၀၀၀</td><td class="n b">၃၅၀,၀၀၀</td></tr>
+          </table>
+          <p class="muted" style="margin:8px 0 0">* ကော်မရှင် – ကားတစ်စီးကို ၈၀၀ ကျပ် (ဆိုင်ရှင်က ပြင်ဆင်နိုင်)</p>
+        </div>
+        <div style="margin-top:10px"><button class="btn">လစာစာရင်း ထုတ်မည်</button> <button class="btn ghost">＋ ဝန်ထမ်းအသစ်</button></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 6 REPORT -->
+  <div class="screen" id="s6">
+    <p class="cap"><b>ရောင်းအား Report</b> – ဆိုင်ရှင်က ဖုန်းကနေ ဆိုင်မှာမရှိလည်း ကြည့်လို့ရပါတယ်။</p>
+    <div class="phone"><div class="in">
+      <div class="top"><b>📊 ဒီနေ့ အခြေအနေ</b><small>၂၃ အောက်တိုဘာ</small></div>
+      <div class="body">
+        <div class="kpi">
+          <div class="card"><span class="muted">ရောင်းအား</span><b>၂၈၅,၀၀၀</b></div>
+          <div class="card"><span class="muted">ကားအရေအတွက်</span><b>၁၄ စီး</b></div>
+          <div class="card"><span class="muted">ငွေသား</span><b>၁၅၅,၀၀၀</b></div>
+          <div class="card"><span class="muted">Digital Pay</span><b>၁၃၀,၀၀၀</b></div>
+        </div>
+        <div class="card">
+          <div class="b">ဒီအပတ် ရောင်းအား (သောင်း)</div>
+          <div class="bars" style="margin-top:18px">
+            <div style="height:55%"><i>၂၂</i></div><div style="height:70%"><i>၂၈</i></div><div style="height:48%"><i>၁၉</i></div>
+            <div style="height:80%"><i>၃၂</i></div><div style="height:95%"><i>၃၈</i></div><div style="height:100%"><i>၄၀</i></div><div style="height:72%"><i>၂၈</i></div>
+          </div>
+          <div class="lbl"><span>တနင်္လာ</span><span>အင်္ဂါ</span><span>ဗုဒ္ဓဟူး</span><span>ကြာ</span><span>သောကြာ</span><span>စနေ</span><span>တနင်္ဂနွေ</span></div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="b" style="margin-bottom:4px">ရောင်းအားကောင်းသော ဝန်ဆောင်မှု</div>
+          <table><tr><td>Full wash</td><td class="n">၈ ကြိမ်</td></tr><tr><td>ပြင်ပဆေး</td><td class="n">၅ ကြိမ်</td></tr><tr><td>အတွင်းသန့်ရှင်း</td><td class="n">၃ ကြိမ်</td></tr></table>
+          <p class="muted" style="margin:6px 0 0">🕑 လူအစည်ကားဆုံးအချိန် – နေ့လယ် ၁၂:၀၀ မှ ၁၆:၀၀</p>
+        </div>
+      </div>
+      <div class="nav"><div><span>🚗</span>တန်းစီ</div><div><span>＋</span>အော်ဒါ</div><div><span>👥</span>ဖောက်သည်</div><div class="on"><span>📊</span>Report</div></div>
+    </div></div>
+  </div>
+
+  <!-- 7 INVENTORY -->
+  <div class="screen" id="s7">
+    <p class="cap"><b>ပစ္စည်းစာရင်း</b> – ကားဆေးတိုင်း သုံးသွားတဲ့ပစ္စည်း အလိုအလျောက် နုတ်ပြီး၊ နည်းလာရင် အနီရောင်နဲ့ သတိပေးပါတယ်။</p>
+    <div class="tablet"><div class="in">
+      <div class="top"><b>📦 ပစ္စည်းစာရင်း</b><small>၂ ခု နည်းနေပြီ</small></div>
+      <div class="body">
+        <div class="card">
+          <table>
+            <tr><th>ပစ္စည်း</th><th>လက်ကျန်</th><th style="width:30%"></th><th>အခြေအနေ</th></tr>
+            <tr><td>ဆပ်ပြာရည်</td><td>၁၂ လီတာ</td><td><div class="meter"><i style="width:70%"></i></div></td><td>ကောင်း</td></tr>
+            <tr><td>Wax</td><td>၃ ဗူး</td><td><div class="meter low"><i style="width:20%"></i></div></td><td style="color:var(--danger);font-weight:700">⚠ နည်းနေ</td></tr>
+            <tr><td>Polish</td><td>၆ ဗူး</td><td><div class="meter"><i style="width:55%"></i></div></td><td>ကောင်း</td></tr>
+            <tr><td>အဝတ်စ</td><td>၁၈ ထည်</td><td><div class="meter"><i style="width:60%"></i></div></td><td>ကောင်း</td></tr>
+            <tr><td>အနံ့ပျောက်ဆေး</td><td>၂ ပုလင်း</td><td><div class="meter low"><i style="width:15%"></i></div></td><td style="color:var(--danger);font-weight:700">⚠ နည်းနေ</td></tr>
+          </table>
+        </div>
+        <div style="margin-top:10px"><button class="btn">＋ ပစ္စည်းဝယ်ယူမှတ်တမ်း</button> <button class="btn ghost">ပေးသွင်းသူစာရင်း</button></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 8 BOOKING -->
+  <div class="screen" id="s8">
+    <p class="cap"><b>Booking</b> – ဖောက်သည်ကိုယ်တိုင် ဖုန်းကနေ ချိန်းဆိုနိုင်တဲ့ စာမျက်နှာ။ (အပိုင်း ၅)</p>
+    <div class="phone"><div class="in">
+      <div class="top"><b>🚿 သန့်ရှင်းကားဆေးဆိုင်</b><small></small></div>
+      <div class="body">
+        <div class="b" style="margin-bottom:6px">ကားဆေးရန် ချိန်းဆိုမည်</div>
+        <div class="muted">ဝန်ဆောင်မှု</div>
+        <div class="seg"><span class="on">Full wash ၁၂,၀၀၀</span><span>ပြင်ပဆေး ၈,၀၀၀</span><span>Full + Wax ၂၅,၀၀၀</span></div>
+        <div class="muted">ရက်စွဲ</div>
+        <div class="seg"><span>၂၃</span><span class="on">၂၄</span><span>၂၅</span><span>၂၆</span></div>
+        <div class="muted">အချိန်</div>
+        <div class="seg"><span>၉:၀၀</span><span>၁၀:၀၀</span><span class="on">၁၁:၀၀</span><span style="opacity:.4">၁၂:၀၀ (ပြည့်)</span><span>၁၃:၀၀</span></div>
+        <div class="card" style="margin:8px 0">
+          <div class="muted">ကားနံပါတ်</div><div class="b">YGN 5A-1234</div>
+          <div class="muted" style="margin-top:6px">ဖုန်းနံပါတ်</div><div class="b">၀၉ ၇၇၇ ၁၂၃ ၄၅၆</div>
+        </div>
+        <button class="btn big">ချိန်းဆိုမည်</button>
+        <p class="muted" style="text-align:center;margin:8px 0 0">ပြီးရင် Viber ကနေ အတည်ပြုစာ ရပါမယ်</p>
+      </div>
+    </div></div>
+  </div>
+
+  <footer>နမူနာ Screen များ – စိတ်ကူးယဉ်ဒေတာဖြင့် ပြထားခြင်းသာ ဖြစ်ပါသည်</footer>
+</div>
+
+<script>
+  // tabs
+  document.getElementById('tabs').addEventListener('click', function(e){
+    var t = e.target.closest('.tab'); if(!t) return;
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});
+    document.querySelectorAll('.screen').forEach(function(x){x.classList.remove('on')});
+    t.classList.add('on'); document.getElementById(t.dataset.s).classList.add('on');
+    window.scrollTo({top:0});
+  });
+
+  // new order demo
+  var prices = {
+    0: [["ပြင်ပဆေး",6000],["အတွင်းသန့်ရှင်း",8000],["Full wash",10000],["Wax / Polish",12000],["အနံ့ပျောက်ဆေး",5000],["တာယာဆေး",3000]],
+    1: [["ပြင်ပဆေး",8000],["အတွင်းသန့်ရှင်း",10000],["Full wash",12000],["Wax / Polish",15000],["အနံ့ပျောက်ဆေး",5000],["တာယာဆေး",3000]],
+    2: [["ပြင်ပဆေး",10000],["အတွင်းသန့်ရှင်း",12000],["Full wash",15000],["Wax / Polish",18000],["အနံ့ပျောက်ဆေး",5000],["တာယာဆေး",4000]],
+    3: [["ပြင်ပဆေး",3000],["Full wash",5000],["Wax / Polish",6000],["တာယာဆေး",2000]]
+  };
+  var type = 1, picked = {};
+  var svc = document.getElementById('svc');
+  function fmt(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace(/\d/g, function(d){return "၀၁၂၃၄၅၆၇၈၉"[d]}); }
+  function render(){
+    svc.innerHTML = '';
+    prices[type].forEach(function(p, i){
+      var b = document.createElement('button');
+      b.className = picked[p[0]] ? 'on' : '';
+      b.innerHTML = '<b>'+p[0]+'</b><span>'+fmt(p[1])+' ကျပ်</span>';
+      b.onclick = function(){ picked[p[0]] ? delete picked[p[0]] : picked[p[0]] = p[1]; render(); };
+      svc.appendChild(b);
+    });
+    var sum = 0, html = '';
+    prices[type].forEach(function(p){ if(picked[p[0]]){ sum += p[1]; html += '<div class="line"><span>'+p[0]+'</span><span>'+fmt(p[1])+'</span></div>'; } });
+    document.getElementById('cart').innerHTML = html || 'ဝန်ဆောင်မှု မရွေးရသေးပါ';
+    var d = Math.round(sum * 0.1 / 100) * 100;
+    document.getElementById('disc').textContent = d ? '-' + fmt(d) : '၀';
+    document.getElementById('tot').textContent = fmt(sum - d) + ' ကျပ်';
+  }
+  document.getElementById('vtype').addEventListener('click', function(e){
+    var s = e.target.closest('span'); if(!s) return;
+    this.querySelectorAll('span').forEach(function(x){x.classList.remove('on')});
+    s.classList.add('on'); type = +s.dataset.k; picked = {}; render();
+  });
+  render();
+</script>
+</body>
+</html>

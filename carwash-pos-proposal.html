@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ကားဆေးဆိုင် POS စနစ် – အဆိုပြုလွှာ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f3f6fa; --card:#fff; --ink:#1b2733; --muted:#5f6e7e; --line:#e1e7ef;
+    --brand:#0b6fb8; --brand-d:#084f85; --soft:#e7f3fc;
+    --accent:#e98400; --accent-soft:#fff3e0; --ok:#188a4b; --ok-soft:#e6f6ed; --bad:#c43b3b; --bad-soft:#fdeaea;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans Myanmar","Myanmar Text","Padauk",system-ui,sans-serif;line-height:1.95;font-size:16px}
+  .wrap{max-width:980px;margin:0 auto;padding:0 16px 40px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:20;background:rgba(243,246,250,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  nav .in{max-width:980px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:8px 16px}
+  nav a{white-space:nowrap;text-decoration:none;color:var(--brand-d);font-size:.88rem;padding:2px 12px;border-radius:99px;border:1px solid var(--line);background:#fff}
+  nav a:hover{background:var(--soft)}
+
+  /* hero */
+  .hero{background:linear-gradient(135deg,#084f85 0%,#0b6fb8 55%,#19a3d9 100%);color:#fff;border-radius:0 0 24px 24px;padding:34px 22px 30px;margin:0 -16px 24px}
+  .hero .in{max-width:980px;margin:0 auto}
+  .hero small{opacity:.85;letter-spacing:.3px}
+  .hero h1{margin:6px 0 10px;font-size:1.75rem;line-height:1.55}
+  .hero p{margin:0 0 16px;max-width:640px;opacity:.96}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chips span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:1px 14px;font-size:.92rem}
+
+  h2{font-size:1.3rem;margin:34px 0 4px;color:var(--brand-d);line-height:1.6}
+  h2 .n{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-size:.95rem;margin-right:8px;vertical-align:middle}
+  .lead{color:var(--muted);margin:0 0 14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .note{font-size:.9rem;color:var(--muted)}
+  ul{margin:6px 0 0;padding-left:22px} li{margin:1px 0}
+
+  /* before / after */
+  .ba{display:grid;gap:10px}
+  .ba .r{display:grid;grid-template-columns:1fr 28px 1fr;gap:8px;align-items:center}
+  .ba .b,.ba .a{border-radius:12px;padding:8px 14px;font-size:.96rem}
+  .ba .b{background:var(--bad-soft);color:#7a2222}
+  .ba .a{background:var(--ok-soft);color:#10603a;font-weight:500}
+  .ba .ar{text-align:center;color:var(--muted)}
+  .ba .h{font-weight:700;font-size:.88rem;color:var(--muted);padding:0 4px}
+  @media(max-width:620px){.ba .r{grid-template-columns:1fr}.ba .ar{transform:rotate(90deg)}}
+
+  /* flow */
+  .flow{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));counter-reset:s}
+  .flow .st{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 14px 14px}
+  .flow .st::before{counter-increment:s;content:counter(s);position:absolute;top:-12px;left:14px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:.85rem}
+  .flow .em{font-size:1.7rem;line-height:1.3}
+  .flow b{display:block}
+
+  /* phases */
+  .ph{border:1px solid var(--line);border-radius:18px;background:#fff;margin-bottom:16px;overflow:hidden}
+  .ph .hd{display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--soft);flex-wrap:wrap}
+  .ph .num{width:44px;height:44px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:1.2rem;flex:none}
+  .ph .tt{flex:1;min-width:200px}
+  .ph .tt b{font-size:1.08rem;display:block;line-height:1.5}
+  .ph .price{font-size:1.3rem;font-weight:700;color:var(--accent);white-space:nowrap}
+  .ph .bd{display:grid;gap:0;grid-template-columns:1fr 1fr}
+  @media(max-width:700px){.ph .bd{grid-template-columns:1fr}}
+  .ph .bd>div{padding:14px 18px}
+  .ph .bd>div+div{border-left:1px dashed var(--line)}
+  @media(max-width:700px){.ph .bd>div+div{border-left:0;border-top:1px dashed var(--line)}}
+  .ph h4{margin:0 0 4px;font-size:.92rem;color:var(--muted);font-weight:500}
+  .ph .gain li{color:#10603a}
+  .tag{display:inline-block;font-size:.78rem;padding:0 10px;border-radius:99px;font-weight:500;line-height:1.7}
+  .tag.must{background:var(--accent-soft);color:#a35c00}
+  .tag.opt{background:#eef1f5;color:var(--muted)}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:.96rem}
+  th,td{padding:10px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:var(--soft);color:var(--brand-d);font-weight:700}
+  td.num,th.num{text-align:right;white-space:nowrap}
+  tfoot td{font-weight:700;border-top:2px solid var(--brand);border-bottom:0}
+  .scroll{overflow-x:auto}
+
+  /* calculator */
+  .calc label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;background:#fff}
+  .calc label:hover{background:var(--soft)}
+  .calc input{width:20px;height:20px;margin-top:6px;accent-color:var(--brand)}
+  .calc .px{margin-left:auto;font-weight:700;color:var(--accent);white-space:nowrap}
+  .calc .sum{display:flex;justify-content:space-between;align-items:center;background:var(--brand-d);color:#fff;border-radius:14px;padding:12px 18px;margin-top:10px;font-weight:700}
+  .calc .sum span:last-child{font-size:1.4rem}
+
+  /* options */
+  .opt{position:relative;border:2px solid var(--line);border-radius:18px;padding:20px;background:#fff;display:flex;flex-direction:column}
+  .opt.rec{border-color:var(--accent);box-shadow:0 6px 24px rgba(233,132,0,.15)}
+  .opt .badge{position:absolute;top:-13px;left:18px;background:var(--accent);color:#fff;font-size:.82rem;padding:0 14px;border-radius:99px}
+  .opt h3{margin:0;font-size:1.08rem}
+  .opt .for{color:var(--muted);font-size:.9rem;margin-bottom:6px}
+  .opt .big{font-size:1.7rem;font-weight:700;line-height:1.5}
+  .opt .big small{font-size:.9rem;font-weight:500;color:var(--muted)}
+  .opt .mo{font-weight:500;color:var(--brand-d);margin-bottom:6px}
+  .opt .sv{display:inline-block;background:var(--ok-soft);color:#10603a;border-radius:8px;padding:0 10px;font-size:.88rem;margin:2px 0 6px}
+  .opt ul{flex:1}
+
+  /* faq */
+  details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px 16px;margin-bottom:8px}
+  summary{cursor:pointer;font-weight:500;padding:8px 0;color:var(--brand-d)}
+  details p{margin:0 0 10px;color:var(--ink)}
+
+  .steps{display:grid;gap:10px}
+  .steps div{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+  .steps i{font-style:normal;flex:none;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;margin-top:4px}
+
+  footer{text-align:center;color:var(--muted);font-size:.9rem;padding:24px 0 8px}
+  @media print{
+    nav{display:none} body{background:#fff;font-size:14px} .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:0 0 16px;border-radius:12px}
+    .ph,.opt,.card,details{break-inside:avoid} details{display:block}
+  }
+</style>
+</head>
+<body>
+
+<nav><div class="in">
+  <a href="#why">ဘာပြောင်းလဲမလဲ</a><a href="#how">အလုပ်လုပ်ပုံ</a><a href="#parts">အပိုင်းများ</a>
+  <a href="#price">စျေးနှုန်း</a><a href="#options">ငွေပေးချေပုံ</a><a href="#extra">သီးခြားစရိတ်</a><a href="#faq">မေးလေ့ရှိသည်များ</a>
+</div></nav>
+
+<div class="hero"><div class="in">
+  <small>ကားဆေးဆိုင်အတွက် အဆိုပြုလွှာ</small>
+  <h1>ဆိုင်ကို စနစ်တကျ၊ ငွေမပျောက်၊ ဖောက်သည်ပြန်လာအောင်<br>ကူညီမယ့် POS စနစ်</h1>
+  <p>ဒီစာမျက်နှာက နည်းပညာမသိလည်း နားလည်နိုင်အောင် ရိုးရိုးရှင်းရှင်း ရေးထားပါတယ်။ ဘာတွေရမလဲ၊ ဘယ်လောက်ကျမလဲ၊ ဘယ်လိုစမလဲ အစအဆုံး ဖတ်နိုင်ပါတယ်။</p>
+  <div class="chips"><span>✅ အပိုင်းလိုက် ရွေးယူနိုင်</span><span>✅ မြန်မာဘာသာ</span><span>✅ ဖုန်း/Tablet မှာ သုံးနိုင်</span><span>✅ အသုံးပြုနည်း သင်ပေး</span></div>
+</div></div>
+
+<div class="wrap">
+
+<!-- 1 -->
+<h2 id="why"><span class="n">၁</span>ဒီစနစ်ရှိရင် ဘာပြောင်းလဲမလဲ</h2>
+<p class="lead">အခု စာအုပ်နဲ့ မှတ်နေတဲ့ပုံစံနဲ့ စနစ်ရှိတဲ့ပုံစံ နှိုင်းယှဉ်ကြည့်ပါ။</p>
+<div class="card"><div class="ba">
+  <div class="r"><div class="h">အခု</div><div></div><div class="h">စနစ်ရှိရင်</div></div>
+  <div class="r"><div class="b">ဒီနေ့ဘယ်လောက်ရလဲ ညမှ ပေါင်းကြည့်ရတယ်</div><div class="ar">➜</div><div class="a">ဖုန်းထဲမှာ အချိန်မရွေး ကြည့်လို့ရတယ်</div></div>
+  <div class="r"><div class="b">ကားဘယ်နှစီးဆေးပြီး ဘယ်သူ့ဆီမှာလဲ မှတ်မိဖို့ခက်</div><div class="ar">➜</div><div class="a">ကားတန်းစီ မျက်နှာပြင်မှာ တစ်ချက်ကြည့်ရုံ</div></div>
+  <div class="r"><div class="b">ငွေပေါက်ကြားတာ၊ စာရင်းမကိုက်တာ ရှာမရ</div><div class="ar">➜</div><div class="a">ကားတစ်စီးချင်းစီ ဘယ်သူလက်ခံ၊ ဘယ်လောက်ရ မှတ်ထား</div></div>
+  <div class="r"><div class="b">ဖောက်သည်အဟောင်း ပြန်လာမလာ မသိ</div><div class="ar">➜</div><div class="a">အမှတ်ကတ်၊ လစဉ်ပက်ကေ့ချ်နဲ့ ပြန်လာအောင် ချိတ်ထားနိုင်</div></div>
+  <div class="r"><div class="b">ဝန်ထမ်းလစာ၊ ကော်မရှင်ကို လက်နဲ့တွက်ရ</div><div class="ar">➜</div><div class="a">ကားဆေးတိုင်း ကော်မရှင် အလိုအလျောက်တွက်</div></div>
+  <div class="r"><div class="b">ဆပ်ပြာ၊ Wax ဘယ်တော့ကုန်မလဲ မသိ</div><div class="ar">➜</div><div class="a">နည်းလာရင် အနီရောင်နဲ့ သတိပေး</div></div>
+</div></div>
+
+<!-- 2 -->
+<h2 id="how"><span class="n">၂</span>တစ်နေ့တာ ဘယ်လိုအလုပ်လုပ်လဲ</h2>
+<p class="lead">ဝန်ထမ်းက Tablet သို့မဟုတ် ဖုန်းမှာ ဒီအဆင့် ၄ ဆင့်ပဲ လုပ်ရပါတယ်။</p>
+<div class="flow" style="margin-top:20px">
+  <div class="st"><div class="em">🚗</div><b>ကားရောက်</b>ကားနံပါတ်ရိုက်ပြီး အော်ဒါဖွင့်၊ ကားအမျိုးအစားရွေး</div>
+  <div class="st"><div class="em">🧽</div><b>ဝန်ဆောင်မှုရွေး</b>နှိပ်လိုက်ရုံနဲ့ စျေးနဲ့ ပေါင်းလဒ် အလိုအလျောက်တက်</div>
+  <div class="st"><div class="em">⏳</div><b>ဆေးနေစဉ်</b>ကားတန်းစီမှာ "ဆေးနေ" ပြ၊ ဘယ်ဝန်ထမ်းလဲ မှတ်ထား</div>
+  <div class="st"><div class="em">🧾</div><b>ငွေရှင်း</b>ငွေသား/KBZPay/WavePay ရွေး၊ ဘောင်ချာထုတ်</div>
+</div>
+
+<!-- 3 -->
+<h2 id="parts"><span class="n">၃</span>အပိုင်း ၅ ပိုင်း – လိုတာကိုပဲ ရွေးယူနိုင်</h2>
+<p class="lead">တစ်ခါတည်း အကုန်မလုပ်ဘဲ ပထမအပိုင်းကနေ စပြီး ဆိုင်ကြီးလာမှ ဆက်ထည့်လို့ရပါတယ်။</p>
+
+<div class="ph">
+  <div class="hd"><div class="num">၁</div><div class="tt"><span class="tag must">အရင်ဆုံး လိုအပ်</span><b>ရောင်းချမှုနှင့် ကားတန်းစီ</b></div><div class="price">၂,၀၀၀,၀၀၀ ကျပ်</div></div>
+  <div class="bd">
+    <div><h4>ဘာတွေပါလဲ</h4><ul>
+      <li>ဝန်ဆောင်မှုစာရင်းနဲ့ စျေးနှုန်း (ပြင်ပဆေး၊ Full wash၊ Wax စသည်)</li>
+      <li>ကားအမျိုးအစားအလိုက် စျေးခွဲ (ကား၊ SUV၊ ပစ်ကပ်၊ ဆိုင်ကယ်)</li>
+      <li>လျှော့စျေး၊ Tip၊ အကြွေးစာရင်း</li>
+      <li>ငွေသား၊ KBZPay၊ WavePay စသည် ငွေပေးချေမှု မှတ်တမ်း</li>
+      <li>ဘောင်ချာ ထုတ်ခြင်း (စက္ကူ ဒါမှမဟုတ် ဖုန်းထဲပို့)</li>
+      <li>ကားတန်းစီ – စောင့်နေ → ဆေးနေ → ပြီးပြီ → ပေးအပ်ပြီး</li>
+      <li>နေ့စဉ်ရောင်းအား၊ ဆိုင်ပိတ်ငွေရှင်းတမ်း</li></ul></div>
+    <div class="gain"><h4>ဆိုင်ပိုင်ရှင်ရတဲ့ အကျိုး</h4><ul>
+      <li>ငွေပေါက်ကြားမှု လျော့</li><li>ဘယ်ကားက ဘယ်အခြေအနေ ချက်ချင်းသိ</li><li>ညဆိုင်ပိတ်ရင် စာရင်းကိုက်ပြီးသား</li></ul>
+      <p class="note" style="margin-top:8px">ဒီအပိုင်းတစ်ခုတည်းနဲ့တင် ဆိုင်ကို နေ့စဉ် သုံးလို့ရပါပြီ။</p></div>
+  </div>
+</div>
+
+<div class="ph">
+  <div class="hd"><div class="num">၂</div><div class="tt"><span class="tag opt">ဖောက်သည်ပြန်လာအောင်</span><b>ဖောက်သည်နှင့် Membership</b></div><div class="price">၈၀၀,၀၀၀ ကျပ်</div></div>
+  <div class="bd">
+    <div><h4>ဘာတွေပါလဲ</h4><ul>
+      <li>ဖောက်သည်စာရင်း (တစ်ယောက်မှာ ကားအစီးများစွာ)</li>
+      <li>ဘယ်တုန်းက ဘာဆေးခဲ့လဲ မှတ်တမ်း</li>
+      <li>လစဉ်ပက်ကေ့ချ် (ဥပမာ တစ်လ ၄ ကြိမ်ဆေး)</li>
+      <li>အမှတ်ကတ် (၁၀ ကြိမ်ဆေးရင် ၁ ကြိမ်အလကား)</li>
+      <li>Voucher / Promo code</li>
+      <li>ပြန်လာဖို့ သတိပေးရမယ့် ဖောက်သည်စာရင်း ထုတ်ပေး</li></ul></div>
+    <div class="gain"><h4>ဆိုင်ပိုင်ရှင်ရတဲ့ အကျိုး</h4><ul>
+      <li>ဖောက်သည်အသစ်ရှာတာထက် အဟောင်းပြန်လာတာက ပိုသက်သာ</li><li>လစဉ်ပက်ကေ့ချ်နဲ့ ဝင်ငွေ ကြိုသိရ</li></ul></div>
+  </div>
+</div>
+
+<div class="ph">
+  <div class="hd"><div class="num">၃</div><div class="tt"><span class="tag opt">ဝန်ထမ်းစီမံ</span><b>ဝန်ထမ်းနှင့် ကော်မရှင်</b></div><div class="price">၇၀၀,၀၀၀ ကျပ်</div></div>
+  <div class="bd">
+    <div><h4>ဘာတွေပါလဲ</h4><ul>
+      <li>ဝန်ထမ်းစာရင်း၊ တက်ရောက်မှု</li>
+      <li>ကားတစ်စီးဆေးတိုင်း ကော်မရှင် အလိုအလျောက်တွက်</li>
+      <li>လစဉ် လုပ်ခလစာ အကျဉ်းချုပ်</li>
+      <li>ဝန်ထမ်းတစ်ယောက်ချင်း ဆေးခဲ့သောကားအရေအတွက်</li>
+      <li>သုံးခွင့်ခွဲခြား (ဆိုင်ရှင်၊ မန်နေဂျာ၊ ငွေကိုင်၊ ဆေးသူ)</li></ul></div>
+    <div class="gain"><h4>ဆိုင်ပိုင်ရှင်ရတဲ့ အကျိုး</h4><ul>
+      <li>လစာတွက်ရတာ ရှင်းပြီး အငြင်းပွားမှုလျော့</li><li>ဝန်ထမ်းတွေ ပိုကြိုးစားလာ</li><li>ငွေကိုင်က ဆိုင်ရှင်ကြည့်သင့်တာတွေ မမြင်ရအောင် ကန့်သတ်နိုင်</li></ul></div>
+  </div>
+</div>
+
+<div class="ph">
+  <div class="hd"><div class="num">၄</div><div class="tt"><span class="tag opt">ပစ္စည်းထိန်းချုပ်</span><b>ပစ္စည်းစာရင်းနှင့် ကုန်ကျစရိတ်</b></div><div class="price">၇၀၀,၀၀၀ ကျပ်</div></div>
+  <div class="bd">
+    <div><h4>ဘာတွေပါလဲ</h4><ul>
+      <li>ဆပ်ပြာရည်၊ Wax၊ Polish၊ အဝတ်စ စသည့် ပစ္စည်းစာရင်း</li>
+      <li>ကားဆေးတိုင်း သုံးသွားတဲ့ ပစ္စည်း အလိုအလျောက်နှုတ်</li>
+      <li>ပစ္စည်းနည်းလာရင် သတိပေး</li>
+      <li>ဝယ်ယူမှုမှတ်တမ်း၊ ပေးသွင်းသူစာရင်း</li>
+      <li>လျှပ်စစ်၊ ရေ၊ ဆိုင်ခ စသည့် ကုန်ကျစရိတ်မှတ်တမ်း</li>
+      <li>အမြတ်/အရှုံး အစီရင်ခံစာ</li></ul></div>
+    <div class="gain"><h4>ဆိုင်ပိုင်ရှင်ရတဲ့ အကျိုး</h4><ul>
+      <li>ပစ္စည်းတိတ်တိတ်ကုန်တာ၊ ရုတ်တရက်ပြတ်တာ မရှိတော့</li><li>တကယ်အမြတ် ဘယ်လောက်ရလဲ သိရ</li></ul></div>
+  </div>
+</div>
+
+<div class="ph">
+  <div class="hd"><div class="num">၅</div><div class="tt"><span class="tag opt">ဆိုင်ကြီးလာမှ</span><b>ကြိုတင်ချိန်းဆိုခြင်းနှင့် အပိုလုပ်ဆောင်ချက်</b></div><div class="price">၁,၂၀၀,၀၀၀ ကျပ်</div></div>
+  <div class="bd">
+    <div><h4>ဘာတွေပါလဲ</h4><ul>
+      <li>ဖောက်သည်ကိုယ်တိုင် ဖုန်းကနေ ချိန်းဆိုနိုင်တဲ့ Booking စာမျက်နှာ</li>
+      <li>ကားမတိုင်ခင်/ပြီးနောက် ဓာတ်ပုံသိမ်း (အငြင်းပွားမှုကာကွယ်ရန်)</li>
+      <li>အင်တာနက်ပြတ်ရင်လည်း ဆက်သုံးနိုင် (Offline)</li>
+      <li>ဆိုင်ခွဲများ စီမံနိုင်ခြင်း</li></ul></div>
+    <div class="gain"><h4>ဆိုင်ပိုင်ရှင်ရတဲ့ အကျိုး</h4><ul>
+      <li>ဖုန်းမကိုင်ရဘဲ ချိန်းဆိုမှု ရ</li><li>ဓာတ်ပုံမှတ်တမ်းနဲ့ ဖောက်သည်အငြင်းပွားမှု ကာကွယ်နိုင်</li></ul>
+      <p class="note" style="margin-top:8px">ဆိုင်တည်ငြိမ်လာမှ ထည့်လည်း ရပါတယ်။</p></div>
+  </div>
+</div>
+
+<!-- 4 -->
+<h2 id="price"><span class="n">၄</span>စျေးနှုန်း</h2>
+<p class="lead">အောက်က အကွက်တွေကို ရွေးကြည့်ပါ။ ရွေးတဲ့အပိုင်းအလိုက် ပေါင်းလဒ် အလိုအလျောက်ပြပါမယ်။</p>
+<div class="card calc" id="calc">
+  <label><input type="checkbox" data-p="2000000" checked disabled><div><b>အပိုင်း ၁</b> – ရောင်းချမှုနှင့် ကားတန်းစီ<div class="note">အခြေခံဖြစ်လို့ မဖြစ်မနေ ပါရပါမယ်</div></div><span class="px">၂,၀၀၀,၀၀၀</span></label>
+  <label><input type="checkbox" data-p="800000"><div><b>အပိုင်း ၂</b> – ဖောက်သည်နှင့် Membership</div><span class="px">၈၀၀,၀၀၀</span></label>
+  <label><input type="checkbox" data-p="700000"><div><b>အပိုင်း ၃</b> – ဝန်ထမ်းနှင့် ကော်မရှင်</div><span class="px">၇၀၀,၀၀၀</span></label>
+  <label><input type="checkbox" data-p="700000"><div><b>အပိုင်း ၄</b> – ပစ္စည်းစာရင်းနှင့် ကုန်ကျစရိတ်</div><span class="px">၇၀၀,၀၀၀</span></label>
+  <label><input type="checkbox" data-p="1200000"><div><b>အပိုင်း ၅</b> – Booking နှင့် အပိုလုပ်ဆောင်ချက်</div><span class="px">၁,၂၀၀,၀၀၀</span></label>
+  <div class="sum"><span>ရွေးထားတဲ့ ပေါင်းလဒ်</span><span id="tot">၂,၀၀၀,၀၀၀ ကျပ်</span></div>
+  <p class="note" style="margin:8px 0 0">* ဒါက အပိုင်းတစ်ခုချင်းစီ ယူတဲ့စျေးပါ။ အောက်က "ရွေးချယ်မှု B / C" လို အစုလိုက်ယူရင် ပိုသက်သာပါတယ်။</p>
+</div>
+
+<!-- 5 -->
+<h2 id="options"><span class="n">၅</span>ငွေပေးချေပုံ ရွေးစရာ ၃ မျိုး</h2>
+<p class="lead">ဆိုင်ရဲ့ ငွေကြေးအခြေအနေနဲ့ အကိုက်ညီဆုံးကို ရွေးပါ။</p>
+<div class="grid" style="margin-top:18px">
+  <div class="opt">
+    <h3>ရွေးချယ်မှု A – အဆင့်လိုက်</h3>
+    <div class="for">အရင်းနည်းနည်းနဲ့ စမ်းသုံးကြည့်ချင်သူ</div>
+    <div class="big">၂,၀၀၀,၀၀၀ <small>ကျပ်မှ စ</small></div>
+    <div class="mo">လစဉ်ထိန်းသိမ်းခ ၆၀,၀၀၀ ကျပ်</div>
+    <ul><li>အပိုင်း ၁ ကို အရင်လုပ်</li><li>သုံးကြည့်ပြီးမှ ကျန်အပိုင်းတွေ လိုရင်ထပ်ယူ</li><li>လိုတဲ့အပိုင်းကိုပဲ ပေးရ</li></ul>
+  </div>
+  <div class="opt rec">
+    <span class="badge">⭐ အများဆုံးရွေး</span>
+    <h3>ရွေးချယ်မှု B – အခြေခံသုံးပိုင်း</h3>
+    <div class="for">ဆိုင်ပုံမှန်လည်ပတ်ဖို့ လိုတာအကုန်ပါတာ</div>
+    <div class="big">၃,၀၀၀,၀၀၀ <small>ကျပ်</small></div>
+    <div class="mo">လစဉ်ထိန်းသိမ်းခ ၈၀,၀၀၀ ကျပ်</div>
+    <div class="sv">၅၀၀,၀၀၀ ကျပ် သက်သာ (ပုံမှန် ၃,၅၀၀,၀၀၀)</div>
+    <ul><li>အပိုင်း ၁ + ၂ + ၃</li><li>ရောင်းချမှု၊ ဖောက်သည်၊ ဝန်ထမ်း အကုန်ပါ</li></ul>
+  </div>
+  <div class="opt">
+    <h3>ရွေးချယ်မှု C – အားလုံးပါ</h3>
+    <div class="for">တစ်ခါတည်းပေးပြီး မပူပန်ချင်သူ</div>
+    <div class="big">၄,၄၀၀,၀၀၀ <small>ကျပ်</small></div>
+    <div class="mo">ပထမ ၁ လ ထိန်းသိမ်းခ အလကား၊ ထို့နောက် လစဉ် ၇၀,၀၀၀</div>
+    <div class="sv">၁,၀၀၀,၀၀၀ ကျပ် သက်သာ (ပုံမှန် ၅,၄၀၀,၀၀၀)</div>
+    <ul><li>အပိုင်း ၁ မှ ၅ အားလုံး</li></ul>
+  </div>
+</div>
+
+<div class="card scroll" style="margin-top:16px"><table>
+  <thead><tr><th>အပိုင်း</th><th>A</th><th>B</th><th>C</th></tr></thead>
+  <tbody>
+    <tr><td>၁ ရောင်းချမှုနှင့် ကားတန်းစီ</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>၂ ဖောက်သည်နှင့် Membership</td><td>နောက်မှယူနိုင်</td><td>✅</td><td>✅</td></tr>
+    <tr><td>၃ ဝန်ထမ်းနှင့် ကော်မရှင်</td><td>နောက်မှယူနိုင်</td><td>✅</td><td>✅</td></tr>
+    <tr><td>၄ ပစ္စည်းစာရင်းနှင့် ကုန်ကျစရိတ်</td><td>နောက်မှယူနိုင်</td><td>နောက်မှယူနိုင်</td><td>✅</td></tr>
+    <tr><td>၅ Booking နှင့် အပိုလုပ်ဆောင်ချက်</td><td>နောက်မှယူနိုင်</td><td>နောက်မှယူနိုင်</td><td>✅</td></tr>
+  </tbody>
+  <tfoot><tr><td>စုစုပေါင်း စတင်ပေးရမည့်ငွေ</td><td class="num">၂,၀၀၀,၀၀၀</td><td class="num">၃,၀၀၀,၀၀၀</td><td class="num">၄,၄၀၀,၀၀၀</td></tr></tfoot>
+</table></div>
+<p class="note">* စျေးနှုန်းများသည် ခန့်မှန်းစျေးဖြစ်ပြီး ဆိုင်၏ လိုအပ်ချက်အတိအကျ ဆွေးနွေးပြီးမှ အတည်ပြုပါမည်။ နောက်မှ ထပ်ယူသောအပိုင်းများကို အပိုင်းစျေးအတိုင်း ပေးရပါမည်။</p>
+
+<!-- 6 -->
+<h2 id="extra"><span class="n">၆</span>ဆိုင်က သီးခြားပေးရမည့် စရိတ်</h2>
+<p class="lead">အထက်က စျေးထဲမှာ မပါဘဲ ဆိုင်ပိုင်ရှင်က သက်ဆိုင်ရာ ကုမ္ပဏီကို တိုက်ရိုက်ပေးရတဲ့ စရိတ်တွေပါ။</p>
+<div class="card scroll"><table>
+  <thead><tr><th>အမျိုးအစား</th><th>ဘာအတွက်လဲ</th><th class="num">ခန့်မှန်းစျေး</th></tr></thead>
+  <tbody>
+    <tr><td><b>အင်တာနက်ပေါ်ထားရန်</b><br><span class="note">(Hosting + Domain)</span></td><td>စနစ်ကို ဖုန်း/ကွန်ပျူတာနဲ့ ဝင်သုံးနိုင်ဖို့ တစ်နှစ်ပေးရတဲ့ ငှားရမ်းခ</td><td class="num">၅၀၀,၀၀၀ ကျပ်/နှစ်</td></tr>
+    <tr><td><b>ဘောင်ချာပရင့်စက်</b><br><span class="note">(လိုမှ)</span></td><td>စက္ကူဘောင်ချာ ထုတ်ချင်ရင် Thermal printer ၁ လုံး</td><td class="num">၁၂၀,၀၀၀ – ၂၅၀,၀၀၀ ကျပ်</td></tr>
+    <tr><td><b>Tablet / ဖုန်း / ကွန်ပျူတာ</b></td><td>ဆိုင်မှာ ရှိပြီးသားကို သုံးလို့ရ</td><td class="num">ရှိပြီးသားဆို ၀</td></tr>
+    <tr><td><b>SMS / Viber ပို့ခ</b><br><span class="note">(လိုမှ)</span></td><td>အလိုအလျောက်ပို့ချင်ရင် ဝန်ဆောင်မှုပေးသူကို တိုက်ရိုက်ပေးရ (အောက်က မေးခွန်းကြည့်ပါ)</td><td class="num">ဝန်ဆောင်မှုပေးသူအလိုက်</td></tr>
+  </tbody>
+</table></div>
+
+<h2><span class="n">၇</span>လစဉ်ထိန်းသိမ်းခ ဆိုတာ ဘာလဲ</h2>
+<div class="grid">
+  <div class="card"><b>🛠 ပြင်ဆင်ပေးခြင်း</b><br>စနစ်ချို့ယွင်းရင် ပြင်ပေးမယ်၊ ဒေတာကို ပုံမှန် Backup လုပ်ပေးမယ်</div>
+  <div class="card"><b>✏️ ပြောင်းလဲပေးခြင်း</b><br>စျေးနှုန်း၊ ဝန်ဆောင်မှုအသစ် ထည့်ချင်ရင် ထည့်ပေးမယ်</div>
+  <div class="card"><b>📞 မေးမြန်းနိုင်ခြင်း</b><br>ဖုန်း/Viber နဲ့ မေးလို့ရတယ်၊ လစဉ် Support ၁၀ ကြိမ်အထိ ပါဝင်</div>
+  <div class="card"><b>👨‍🏫 သင်ကြားပေးခြင်း</b><br>ပထမအသုံးပြုချိန်မှာ ဝန်ထမ်းတွေကို အခမဲ့ လေ့ကျင့်သင်ပေး</div>
+</div>
+
+<!-- FAQ -->
+<h2 id="faq"><span class="n">၈</span>မေးလေ့ရှိသော မေးခွန်းများ</h2>
+<details><summary>ကွန်ပျူတာမသုံးတတ်ရင် သုံးလို့ရမလား</summary><p>ရပါတယ်။ ခလုတ်တွေကို ကြီးကြီးမားမား၊ မြန်မာလို ပြထားပါတယ်။ ပထမဆုံးသုံးတဲ့အခါ ဝန်ထမ်းတွေကို ကိုယ်တိုင် သင်ပေးပါမယ်။ ဖုန်းထဲက Facebook သုံးတတ်ရင် သုံးနိုင်ပါတယ်။</p></details>
+<details><summary>အင်တာနက်ပြတ်သွားရင် ဘာဖြစ်မလဲ</summary><p>အပိုင်း ၁ မှ ၄ အတွက် အင်တာနက်လိုပါတယ်။ ပြတ်သွားရင် ခဏစောင့်ပြီး ပြန်သုံးရပါမယ်။ အင်တာနက်မရှိလည်း ဆက်သုံးနိုင်တဲ့ စနစ် (Offline) က အပိုင်း ၅ မှာပါပါတယ်။ ဆိုင်မှာ အင်တာနက်မကြာခဏပြတ်ရင် ဒါကို အရင်ပြောပါ။</p></details>
+<details><summary>ဆိုင်ရဲ့ ဒေတာ ပျောက်သွားရင်ရော</summary><p>ဒေတာကို ပုံမှန် Backup လုပ်ပေးထားပါတယ် (လစဉ်ထိန်းသိမ်းခထဲ ပါ)။ ဒေတာက ဆိုင်ပိုင်ရှင်ရဲ့ ဒေတာပါ။</p></details>
+<details><summary>နောက်မှ အပိုင်းတွေ ထပ်ယူလို့ရလား</summary><p>ရပါတယ်။ ရွေးချယ်မှု A နဲ့ စပြီး ဆိုင်ကြီးလာမှ ထပ်ယူနိုင်ပါတယ်။ ထပ်ယူတဲ့အပိုင်းကို အပိုင်းစျေးအတိုင်း ပေးရပါမယ်။</p></details>
+<details><summary>ကားပြီးတာကို ဖောက်သည် Viber ကနေ အလိုအလျောက် သိနိုင်လား</summary><p>ပထမ Version မှာ ဝန်ထမ်းက Viber ကိုဖွင့်ပြီး ပို့စာကို ကြိုရေးထားတာထဲက <b>Send ကိုတစ်ချက်နှိပ်</b> ပေးရပါမယ်။ အလိုအလျောက်ပို့ချင်ရင် Viber ရဲ့ တရားဝင် Business Message ဝန်ဆောင်မှုကို ဆိုင်က သီးခြားစာချုပ်လုပ်ရပြီး ပို့ခကို တိုက်ရိုက်ပေးရပါမယ်။ ဒါကို အပိုလုပ်ဆောင်ချက်အဖြစ် နောက်မှ ထည့်ပေးနိုင်ပါတယ်။</p></details>
+<details><summary>လက်ရှိသုံးနေတဲ့ စာရင်းတွေ ပြောင်းထည့်ပေးနိုင်လား</summary><p>Excel ဒါမှမဟုတ် စာအုပ်ထဲက ဖောက်သည်/ဝန်ဆောင်မှု စာရင်းကို စနစ်ထဲ ထည့်ပေးနိုင်ပါတယ်။ စာရင်းအရေအတွက် အလွန်များရင် ကြိုပြောပါ။</p></details>
+
+<!-- steps -->
+<h2><span class="n">၉</span>စတင်ရင် ဘာလုပ်ရမလဲ</h2>
+<div class="steps">
+  <div><i>၁</i><span><b>ဆွေးနွေးမည်</b> – ဆိုင်ရဲ့ ဝန်ဆောင်မှုနဲ့ စျေးနှုန်းတွေကို မေးမြန်းမှတ်သားမယ်</span></div>
+  <div><i>၂</i><span><b>နမူနာကြည့်မည်</b> – မျက်နှာပြင်ပုံစံ အရင်ပြပြီး ပြင်ချင်တာ ပြင်ပေးမယ်</span></div>
+  <div><i>၃</i><span><b>တည်ဆောက်မည်</b> – ရွေးထားတဲ့အပိုင်းကို လုပ်၊ ဆိုင်မှာ စမ်းသုံးကြည့်ရမယ်</span></div>
+  <div><i>၄</i><span><b>လေ့ကျင့်ပြီး စတင်မည်</b> – ဝန်ထမ်းတွေကို သင်ပေးပြီး တကယ်စသုံးမယ်</span></div>
+  <div><i>၅</i><span><b>ဆက်လက်ထိန်းသိမ်းမည်</b> – လိုအပ်ရင် နောက်အပိုင်းတွေ ဆက်ထည့်မယ်</span></div>
+</div>
+
+<footer>ဆက်သွယ်ရန် – (အမည်၊ ဖုန်းနံပါတ်ကို ဒီနေရာတွင် ထည့်ပါ)<br>စျေးနှုန်းများသည် ဆွေးနွေးပြီးမှ အတည်ပြုမည်ဖြစ်သည်</footer>
+</div>
+
+<script>
+  function mm(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace(/\d/g, function(d){ return "၀၁၂၃၄၅၆၇၈၉"[d]; }); }
+  var box = document.getElementById('calc');
+  function upd(){
+    var s = 0;
+    box.querySelectorAll('input').forEach(function(i){ if(i.checked) s += +i.dataset.p; });
+    document.getElementById('tot').textContent = mm(s) + ' ကျပ်';
+  }
+  box.addEventListener('change', upd); upd();
+</script>
+</body>
+</html>
