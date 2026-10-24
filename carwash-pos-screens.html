@@ -180,6 +180,57 @@
   .rep-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px}
   @media(max-width:900px){.rep-grid{grid-template-columns:1fr}}
   .hours{height:170px}
+    /* responsive */
+  html{-webkit-text-size-adjust:100%}
+  svg{max-width:100%}
+  @media(max-width:1020px){
+    .grid2,.rep-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:900px){
+    .side-nav{position:sticky;top:0;z-index:20}
+  }
+  @media(max-width:640px){
+    body{font-size:14.5px}
+    .main{padding:14px 12px 28px}
+    .demo{font-size:.85rem}
+    .bar h2{font-size:1.25rem}
+    .bar .stats{width:100%}
+    .plate.lg{font-size:1.35rem;padding:0 10px}
+    .who{gap:10px}
+    .types{grid-template-columns:repeat(2,1fr)}
+    .ticket{padding:14px}
+    .total{font-size:1.8rem}
+    .bay{grid-template-columns:48px 1fr;gap:10px;padding:10px}
+    .bay .no{width:44px;height:52px;font-size:1.5rem}
+    .bay .time{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:6px;font-size:1.5rem}
+    .bay .time small{display:inline}
+    .bay .track{grid-column:1 / -1}
+    .bay.free .btn{grid-column:2;width:100%}
+    .q{grid-template-columns:28px 1fr}
+    .q .w{grid-column:2}
+    .ready{grid-template-columns:1fr}
+    .ready .btn{width:100%}
+    .meth{grid-template-columns:repeat(2,1fr)}
+    .recv .v{font-size:1.6rem}
+    .qr{width:150px;height:150px}
+    .paper{font-size:.8rem;padding:14px 12px 18px}
+    .tile .big{font-size:1.5rem}
+    .field{flex-wrap:wrap}
+    .field input{width:100%}
+    .rep-hero{padding:16px}
+    .rep-hero .big{font-size:2.3rem}
+    .rep-hero .figs{gap:16px}
+    .hours{gap:3px;height:140px}
+    .hours i b{font-size:.58rem}
+    .hl{gap:3px}
+    .hl span{font-size:.62rem}
+    .leg{gap:8px}
+  }
+  @media(max-width:380px){
+    .types{gap:6px}
+    .plate{font-size:.95rem}
+    .nav-b{padding:6px 10px}
+  }
   @media (prefers-reduced-motion:reduce){.scr.on .bay .fill{animation:none}}
 </style>
 </head>
@@ -408,7 +459,8 @@
           <div class="hours" style="margin-top:24px">
             <i style="height:30%"><b>၁၅</b></i><i style="height:50%"><b>၂၅</b></i><i style="height:40%"><b>၂၀</b></i><i style="height:70%"><b>၃၅</b></i><i style="height:90%"><b>၄၅</b></i><i class="pk" style="height:100%"><b>၅၀</b></i><i style="height:80%"><b>၄၀</b></i><i style="height:60%"><b>၃၀</b></i><i style="height:50%"><b>၂၅</b></i>
           </div>
-          <div class="hl"><span>၉ နာရီ</span><span>၁၀</span><span>၁၁</span><span>၁၂</span><span>၁၃</span><span>၁၄</span><span>၁၅</span><span>၁၆</span><span>၁၇</span></div>
+          <div class="hl"><span>၉</span><span>၁၀</span><span>၁၁</span><span>၁၂</span><span>၁၃</span><span>၁၄</span><span>၁၅</span><span>၁၆</span><span>၁၇</span></div>
+          <p class="muted" style="margin:6px 0 0;font-size:.8rem">အောက်က ဂဏန်းတွေက နာရီပါ (၉ နာရီမှ ၁၇ နာရီထိ)</p>
         </div>
         <div class="panel">
           <b>ငွေပေးချေပုံ</b>
